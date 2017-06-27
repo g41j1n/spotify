@@ -1,0 +1,33 @@
+{
+  "name": "spotify",
+  "version": "1.0.0",
+  "description": "test music app with MEAN stack",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/g41j1n/spotify.git"
+  },
+  "author": "@g41j1n",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/g41j1n/spotify/issues"
+  },
+  "homepage": "https://github.com/g41j1n/spotify#readme",
+  "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "^1.17.2",
+    "connect-multiparty": "^2.0.0",
+    "express": "^4.15.3",
+    "jwt-simple": "^0.5.1",
+    "moment": "^2.18.1",
+    "mongoose": "^4.11.0",
+    "mongoose-pagination": "^1.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
+  }
+}
