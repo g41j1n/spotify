@@ -1,6 +1,10 @@
 'use strict'
+var fs= require('fs');
+var path= require('path');
 var bcrypt = require('bcrypt-nodejs');
 var User= require('../models/user');
+var jwt= require('../services/jwt');
+
 function pruebas(req,res){
   res.status(200).send({message:'control rawr'});
 }
@@ -62,12 +66,15 @@ User.findOne({email: email.toLowerCase()},(err,user)=>{
     }else {
       // COMPROBAR CONTRAENA
       bcrypt.compare(password,user.password,function(err,check){
-        console.log(user);
-        console.log(password);
+        // console.log(user);
+        // console.log(password);
         if (check) {
           // DEVOLVER LOS DATOS DEL USUARIO
           if (param.gethash) {
           // DEVOLVER TOKEN
+          res.status(200).send({
+            token:jwt.createToken(user)
+          });
 
           }else {
             res.status(200).send({user});
@@ -84,10 +91,75 @@ User.findOne({email: email.toLowerCase()},(err,user)=>{
 
 }
 
+function updateUser(req,res) {
+  var userId =req.params.id;
+  // var userId2 =req.params.id;
+  // console.log(userId);
+  // console.log(userId2);
+  var update =req.body;
+  User.findByIdAndUpdate(userId,update,(err,userUpdate)=>{
+    if (err) {
+      res.status(500).send({message:'Error al actualizar el usuario'});
+
+    } else {
+      if (!userUpdate) {
+        res.status(404).send({message:'Error: no existe el usuario'});
+
+      }else{
+        res.status(200).send({user:userUpdate});
+
+      }
+    }
+  });
+}
+
+function uploadImage(req,res) {
+  var userId =req.params.id;
+  var file_name= 'no subido';
+  if (req.files) {
+    var file_path= req.files.image.path;
+    var file_split= file_path.split('\\');
+    var file_name= file_split[2];
+    var ex_split= file_path.split('\.');
+    var file_ext= ex_split[1];
+    if (file_ext == 'jpg' || file_ext == 'png' || file_ext == 'jpeg') {
+      console.log(file_name);
+      User.findByIdAndUpdate(userId,{image: file_name}, (err,userUpdate) =>{
+        if (!userUpdate) {
+          res.status(404).send({message:'Error: no se ha podido actualizar el usuario'});
+
+        }else{
+          res.status(200).send({user:userUpdate});
+
+        }
+      });
+    } else {
+      res.status(200).send({message:'Error: extension no valida'});
+
+    }
+  } else {
+    res.status(200).send({message:'Error: no existe imagen'});
+
+  }
+}
+
+function getImageFile(req,res){
+  var imageFile = req.params.imageFile;
+  fs.exists('./uploads/users/'+imageFile, function(exists){
+    if (exists) {
+      res.sendFile(path.resolve('./uploads/users/'+imageFile));
+    } else {
+      res.status(200).send({message:'Error: no existe imagen'});
+    }
+  });
+}
 
 
 module.exports ={
   pruebas,
   saveUser,
-  loginUser
+  loginUser,
+  updateUser,
+  uploadImage,
+  getImageFile,
 };
